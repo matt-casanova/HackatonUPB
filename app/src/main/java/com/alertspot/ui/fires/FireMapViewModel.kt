@@ -49,7 +49,7 @@ class FireMapViewModel : ViewModel() {
             _uiState.value = FireMapUiState.Loading
             repository.getPoints().fold(
                 onSuccess = { _uiState.value = FireMapUiState.Success(it) },
-                onFailure = { _uiState.value = FireMapUiState.Error(it.message ?: "Unknown error") }
+                onFailure = { _uiState.value = FireMapUiState.Error(it.message ?: "Error de red al conectar al backend real") }
             )
         }
     }

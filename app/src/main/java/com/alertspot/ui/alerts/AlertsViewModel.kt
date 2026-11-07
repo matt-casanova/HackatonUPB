@@ -49,7 +49,7 @@ class AlertsViewModel : ViewModel() {
             _uiState.value = AlertsUiState.Loading
             repository.getAlerts().fold(
                 onSuccess = { _uiState.value = AlertsUiState.Success(it) },
-                onFailure = { _uiState.value = AlertsUiState.Error(it.message ?: "Unknown error") }
+                onFailure = { _uiState.value = AlertsUiState.Error(it.message ?: "Error de red al conectar al backend real") }
             )
         }
     }
@@ -58,6 +58,8 @@ class AlertsViewModel : ViewModel() {
         viewModelScope.launch {
             repository.confirmAlert(id).onSuccess {
                 fetchAlerts()
+            }.onFailure {
+                _uiState.value = AlertsUiState.Error(it.message ?: "Error confirmando alerta")
             }
         }
     }
@@ -66,6 +68,8 @@ class AlertsViewModel : ViewModel() {
         viewModelScope.launch {
             repository.falseAlarm(id).onSuccess {
                 fetchAlerts()
+            }.onFailure {
+                _uiState.value = AlertsUiState.Error(it.message ?: "Error reportando falsa alarma")
             }
         }
     }

@@ -49,7 +49,7 @@ fun FireScreen(
                     }
                 }
                 is FireUiState.Success -> {
-                    FireOverviewContent(state.overview)
+                    FireOverviewContent(state.overview, state.healthOk)
                 }
             }
         }
@@ -57,7 +57,7 @@ fun FireScreen(
 }
 
 @Composable
-fun FireOverviewContent(overview: FireOverview) {
+fun FireOverviewContent(overview: FireOverview, healthOk: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -106,9 +106,23 @@ fun FireOverviewContent(overview: FireOverview) {
         Text("Focos activos: ${overview.activeHotspots}")
         Text("Actualizado: ${overview.updatedAt}")
 
-        if (overview.sourceMode == "DEMO") {
-            Badge(containerColor = MaterialTheme.colorScheme.tertiary) {
-                Text("MODO DEMO", modifier = Modifier.padding(8.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (overview.sourceMode == "DEMO") {
+                Badge(containerColor = MaterialTheme.colorScheme.tertiary) {
+                    Text("MODO DEMO", modifier = Modifier.padding(8.dp))
+                }
+            }
+            if (healthOk) {
+                Badge(containerColor = androidx.compose.ui.graphics.Color(0xFF34C759)) {
+                    Text("API REAL CONECTADA", modifier = Modifier.padding(8.dp))
+                }
+            } else {
+                Badge(containerColor = MaterialTheme.colorScheme.error) {
+                    Text("ERROR API REAL", modifier = Modifier.padding(8.dp))
+                }
             }
         }
     }

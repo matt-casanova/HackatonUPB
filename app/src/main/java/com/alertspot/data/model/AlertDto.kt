@@ -2,6 +2,10 @@ package com.alertspot.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class AlertsResponse(
+    @SerializedName("alerts") val alerts: List<AlertDto> = emptyList()
+)
+
 data class AlertDto(
     @SerializedName("id") val id: Int,
     @SerializedName("node_id") val nodeId: String,

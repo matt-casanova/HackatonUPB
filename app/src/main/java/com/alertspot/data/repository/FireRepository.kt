@@ -7,12 +7,27 @@ import com.alertspot.data.model.FirePoint
 import com.alertspot.data.remote.ApiClient
 import kotlinx.coroutines.delay
 
+object FireRepositoryConfig {
+    var useMockData = false
+}
+
 class FireRepository {
     
-    var useMockData = true
-    
+    suspend fun getHealth(): Result<Boolean> {
+        if (FireRepositoryConfig.useMockData) {
+            delay(200)
+            return Result.success(true)
+        }
+        return try {
+            val response = ApiClient.getApi().getHealth()
+            Result.success(response.isNotEmpty())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getOverview(): Result<FireOverview> {
-        if (useMockData) {
+        if (FireRepositoryConfig.useMockData) {
             delay(500)
             return Result.success(
                 FireOverview(
@@ -38,7 +53,7 @@ class FireRepository {
     }
     
     suspend fun getPoints(): Result<List<FirePoint>> {
-        if (useMockData) {
+        if (FireRepositoryConfig.useMockData) {
             delay(500)
             return Result.success(
                 listOf(
@@ -56,7 +71,7 @@ class FireRepository {
     }
     
     suspend fun getAlerts(): Result<List<AlertDto>> {
-        if (useMockData) {
+        if (FireRepositoryConfig.useMockData) {
             delay(500)
             return Result.success(
                 listOf(
@@ -66,14 +81,14 @@ class FireRepository {
         }
         return try {
             val response = ApiClient.getApi().getAlerts()
-            Result.success(response)
+            Result.success(response.alerts)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
     
     suspend fun confirmAlert(id: Int): Result<Unit> {
-        if (useMockData) {
+        if (FireRepositoryConfig.useMockData) {
             delay(500)
             return Result.success(Unit)
         }
@@ -86,7 +101,7 @@ class FireRepository {
     }
     
     suspend fun falseAlarm(id: Int): Result<Unit> {
-        if (useMockData) {
+        if (FireRepositoryConfig.useMockData) {
             delay(500)
             return Result.success(Unit)
         }

@@ -2,6 +2,7 @@ package com.alertspot.data.remote
 
 import com.alertspot.data.model.ActionRequest
 import com.alertspot.data.model.AlertDto
+import com.alertspot.data.model.AlertsResponse
 import com.alertspot.data.model.FireOverview
 import com.alertspot.data.model.FirePointsResponse
 import retrofit2.http.Body
@@ -24,7 +25,7 @@ interface SatApi {
     suspend fun getHistory(@Query("node_id") nodeId: String): List<Any> // Adjust type if needed
 
     @GET("/api/v1/alerts")
-    suspend fun getAlerts(): List<AlertDto>
+    suspend fun getAlerts(): AlertsResponse
 
     @POST("/api/v1/alerts/{id}/confirm")
     suspend fun confirmAlert(@Path("id") id: Int, @Body request: ActionRequest)
