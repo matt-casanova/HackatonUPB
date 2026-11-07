@@ -15,8 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.material.icons.outlined.Whatshot
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
@@ -39,6 +39,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.alertspot.ui.screen.*
+import com.alertspot.ui.fires.FireScreen
+import com.alertspot.ui.fires.FireMapScreen
+import com.alertspot.ui.alerts.AlertsScreen
 import com.alertspot.ui.theme.Blue
 import com.alertspot.viewmodel.AlertViewModel
 import kotlinx.coroutines.launch
@@ -46,9 +49,9 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 sealed class Screen(val route: String) {
+    data object Fire : Screen("fire")
     data object Map : Screen("map")
     data object AlertList : Screen("alerts")
-    data object Settings : Screen("settings")
     data object AddLocation : Screen("add_location")
     data object History : Screen("history")
     data object EditLocation : Screen("edit_location/{locationId}") {
@@ -71,13 +74,13 @@ fun AppNavigation(viewModel: AlertViewModel) {
 
     val bottomNavItems = remember {
         listOf(
-            BottomNavItem(Screen.Map, "Map", Icons.Filled.Map, Icons.Outlined.Map),
-            BottomNavItem(Screen.AlertList, "Alerts", Icons.Filled.Notifications, Icons.Outlined.Notifications),
-            BottomNavItem(Screen.Settings, "Settings", Icons.Filled.Settings, Icons.Outlined.Settings)
+            BottomNavItem(Screen.Fire, "Incendios", Icons.Filled.Whatshot, Icons.Outlined.Whatshot),
+            BottomNavItem(Screen.Map, "Mapa", Icons.Filled.Map, Icons.Filled.Map),
+            BottomNavItem(Screen.AlertList, "Alertas", Icons.Filled.Notifications, Icons.Outlined.Notifications)
         )
     }
     val bottomRoutes = remember(bottomNavItems) { bottomNavItems.map { it.screen.route }.toSet() }
-    var selectedBottomRoute by rememberSaveable { mutableStateOf(Screen.Map.route) }
+    var selectedBottomRoute by rememberSaveable { mutableStateOf(Screen.Fire.route) }
     var pendingBottomRoute by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(currentRoute) {
@@ -118,31 +121,19 @@ fun AppNavigation(viewModel: AlertViewModel) {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Map.route,
+            startDestination = Screen.Fire.route,
             modifier = Modifier.padding(padding)
         ) {
+            composable(Screen.Fire.route) {
+                FireScreen()
+            }
+
             composable(Screen.Map.route) {
-                MapScreen(
-                    viewModel = viewModel,
-                    onAddAlert = { navController.navigate(Screen.AddLocation.route) }
-                )
+                FireMapScreen()
             }
 
             composable(Screen.AlertList.route) {
-                AlertListScreen(
-                    viewModel = viewModel,
-                    onAddAlert = { navController.navigate(Screen.AddLocation.route) },
-                    onEditAlert = { locationId ->
-                        navController.navigate(Screen.EditLocation.createRoute(locationId))
-                    }
-                )
-            }
-
-            composable(Screen.Settings.route) {
-                SettingsScreen(
-                    viewModel = viewModel,
-                    onNavigateToHistory = { navController.navigate(Screen.History.route) }
-                )
+                AlertsScreen()
             }
 
             composable(Screen.AddLocation.route) {
